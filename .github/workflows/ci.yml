@@ -18,7 +18,10 @@ jobs:
           github token: ${{ secrets.GITHUB_TOKEN }}
       - name: Check
         run: |
+          echo "list nodes with kubectl"
           kubectl get nodes
+          echo "get addons list"
+          minikube addons list
           echo "download chectl"
           bash <(curl -sL  https://www.eclipse.org/che/chectl/)
           echo "start chectl"
