@@ -14,15 +14,11 @@ jobs:
         with:
           minikube version: 'v1.11.0'
           kubernetes version: 'v1.18.2'
+          start args: '--addons=ingress'
           github token: ${{ secrets.GITHUB_TOKEN }}
       - name: Check
         run: |
           kubectl get nodes
-          #echo "stopping minikube"
-          #sudo -E minikube stop
-          echo "install minikube addon"
-          sudo -E minikube addons enable ingress
-          #sudo -E minikube start
           echo "download chectl"
           bash <(curl -sL  https://www.eclipse.org/che/chectl/)
           echo "start chectl"
