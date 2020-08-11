@@ -24,6 +24,12 @@ jobs:
           minikube addons list
           echo "change permissions"
           sudo -E chmod -R 777 "/etc/kubernetes/addons/"
+          echo "check ingress"
+          kubectl get pods -n ingress-nginx
+          echo "wait 30s"
+          sleep 30
+          echo "check ingress again"
+          kubectl get pods -n ingress-nginx
           echo "download chectl"
           bash <(curl -sL  https://www.eclipse.org/che/chectl/)
           echo "start chectl"
