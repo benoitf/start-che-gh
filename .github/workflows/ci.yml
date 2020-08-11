@@ -20,8 +20,8 @@ jobs:
           kubectl get nodes
           #echo "stopping minikube"
           #sudo -E minikube stop
-          echo "install minikube"
-          sudo -E minikube addons enable ingress || echo "install of ingress failed" && kubectl descr po -A
+          echo "install minikube addon"
+          sudo -E minikube addons enable ingress
           #sudo -E minikube start
           echo "download chectl"
           bash <(curl -sL  https://www.eclipse.org/che/chectl/)
