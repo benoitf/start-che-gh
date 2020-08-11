@@ -22,6 +22,8 @@ jobs:
           kubectl get nodes
           echo "get addons list"
           minikube addons list
+          echo "change permissions"
+          sudo -E chmod -R 777 "/etc/kubernetes/addons/"
           echo "download chectl"
           bash <(curl -sL  https://www.eclipse.org/che/chectl/)
           echo "start chectl"
