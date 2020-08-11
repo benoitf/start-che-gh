@@ -18,9 +18,9 @@ jobs:
       - name: Check
         run: |
           kubectl get nodes
-          # minikube stop
-          # minikube addons enable ingress
-          # minikube start
+          sudo minikube stop
+          sudo minikube addons enable ingress
+          sudo minikube start
           bash <(curl -sL  https://www.eclipse.org/che/chectl/)
           chectl server:start --platform=minikube --installer=helm
           
