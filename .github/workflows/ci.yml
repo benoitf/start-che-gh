@@ -1,6 +1,8 @@
 name: che-install
 
-on: [push]
+on: [pull_request]
+
+# on: #[push]
 
 jobs:
   example:
