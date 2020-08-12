@@ -1,6 +1,6 @@
 name: che-install
 
-on: [pull_request]
+on: push
 
 # on: #[push]
 
