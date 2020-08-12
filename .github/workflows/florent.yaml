@@ -11,8 +11,8 @@ jobs:
     steps:
       - name: Setup che
         uses: benoitf/che-install-gh-action@master
-        env:
-          GITHUB_TOKEN : ${{ secrets.GITHUB_TOKEN }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
         
       - name: Check
         run: |
