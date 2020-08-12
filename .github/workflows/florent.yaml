@@ -22,6 +22,7 @@ jobs:
           echo "list /usr/local/bin/"
           ls -la /usr/local/bin/
           echo "cal minikube"
-          minikube status
+          minikube start --vm-driver=none --addons=ingress
+          
           echo "list nodes with kubectl"
           kubectl get nodes
