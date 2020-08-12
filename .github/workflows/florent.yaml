@@ -19,5 +19,9 @@ jobs:
         
       - name: Check
         run: |
+          echo "list /usr/local/bin/"
+          ls -la /usr/local/bin/
+          echo "cal minikube"
+          minikube status
           echo "list nodes with kubectl"
           kubectl get nodes
