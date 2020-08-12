@@ -9,6 +9,9 @@ jobs:
     name: setup che
     runs-on: ubuntu-18.04
     steps:
+      - name: Check before
+        run: |
+          echo "path is $PATH"
       - name: Setup che
         uses: benoitf/che-install-gh-action@master
         with:
