@@ -20,9 +20,7 @@ jobs:
       - name: Check
         run: |
           echo "list /usr/local/bin/"
-          ls -la /usr/local/bin/
-          echo "cal minikube"
-          minikube start --vm-driver=none --addons=ingress
-          
+          ls -la /usr/local/bin/        
           echo "list nodes with kubectl"
           kubectl get nodes
+          
