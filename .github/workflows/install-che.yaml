@@ -12,6 +12,8 @@ jobs:
       - name: Check before
         run: |
           echo "path is $PATH"
+          echo "before, minikube version is"
+          minikube version
       - name: Setup che
         uses: benoitf/che-install-gh-action@master
         with:
@@ -19,8 +21,8 @@ jobs:
         
       - name: Check
         run: |
-          echo "list /usr/local/bin/"
-          ls -la /usr/local/bin/        
+          echo "after, minikube version is"
+          minikube version
           echo "list nodes with kubectl"
           kubectl get nodes
           
