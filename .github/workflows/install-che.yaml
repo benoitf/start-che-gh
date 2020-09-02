@@ -2,8 +2,6 @@ name: che-install
 
 on: push
 
-# on: #[push]
-
 jobs:
   install:
     name: setup che
