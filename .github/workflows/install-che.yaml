@@ -11,6 +11,7 @@ jobs:
           echo "before, minikube version is"
           minikube version
       - name: Setup che
+        id: setup-che
         uses: benoitf/che-install-gh-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -21,4 +22,6 @@ jobs:
           minikube version
           echo "list nodes with kubectl"
           kubectl get nodes
+          che URL is ${{ steps.setup-che.output.che-url }}
+          che token is ${{ steps.setup-che.output.che-token }}
           
