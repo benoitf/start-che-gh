@@ -23,4 +23,8 @@ jobs:
           kubectl get nodes
           echo "che URL is ${{ steps.setup-che.outputs.che-url }}"
           echo "che token is ${{ steps.setup-che.outputs.che-token }}"
+          echo "che token is ${{ steps.setup-che.outputs.che-token }}"
+          echo "create workspace and start it..."
+          chectl workspace:create --start --access-token ${{ steps.setup-che.outputs.che-token }} --devfile=https://gist.githubusercontent.com/benoitf/6f2c761690646c930ea728e85054e43c/raw/620e0fca2911f62534007ca21769eee966ca9649/devfile-projects.yaml
+          echo "workspace started"
           
