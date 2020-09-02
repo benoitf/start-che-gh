@@ -1,5 +1,4 @@
 name: che-install
-
 on: push
 
 jobs:
