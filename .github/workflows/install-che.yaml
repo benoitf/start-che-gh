@@ -15,7 +15,6 @@ jobs:
         uses: benoitf/che-install-gh-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-        
       - name: Check
         run: |
           echo "after, minikube version is"
