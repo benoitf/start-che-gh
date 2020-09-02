@@ -22,6 +22,6 @@ jobs:
           minikube version
           echo "list nodes with kubectl"
           kubectl get nodes
-          che URL is ${{ steps.setup-che.outputs.che-url }}
-          che token is ${{ steps.setup-che.outputs.che-token }}
+          echo "che URL is ${{ steps.setup-che.outputs.che-url }}"
+          echo "che token is ${{ steps.setup-che.outputs.che-token }}"
           
