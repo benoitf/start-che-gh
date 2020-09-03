@@ -5,26 +5,39 @@ jobs:
     name: setup che
     runs-on: ubuntu-20.04
     steps:
-      - name: Check before
-        run: |
-          echo "path is $PATH"
-          echo "before, minikube version is"
-          minikube version
+      - name: Checkout code
+        uses: actions/checkout@v2
       - name: Setup che
         id: setup-che
         uses: benoitf/che-install-gh-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Check
+      - name: Start Workspace
+        id: start-workspace
         run: |
-          echo "after, minikube version is"
-          minikube version
-          echo "list nodes with kubectl"
-          kubectl get nodes
-          echo "che URL is ${{ steps.setup-che.outputs.che-url }}"
-          echo "che token is ${{ steps.setup-che.outputs.che-token }}"
-          echo "che token is ${{ steps.setup-che.outputs.che-token }}"
+          echo "Eclipse Che URL: ${{ steps.setup-che.outputs.che-url }}"
           echo "create workspace and start it..."
-          chectl workspace:create --start --access-token ${{ steps.setup-che.outputs.che-token }} --devfile=https://gist.githubusercontent.com/benoitf/6f2c761690646c930ea728e85054e43c/raw/620e0fca2911f62534007ca21769eee966ca9649/devfile-projects.yaml
+          chectl workspace:create --start --access-token ${{ steps.setup-che.outputs.che-token }} --devfile=https://gist.githubusercontent.com/benoitf/6f2c761690646c930ea728e85054e43c/raw/620e0fca2911f62534007ca21769eee966ca9649/devfile-projects.yaml  2>&1 | tee workspace.log
           echo "workspace started"
+          WORKSPACE_URL=$(cat workspace.log | grep "https://")
+          echo "found URL set to ${WORKSPACE_URL}"
+          echo "::set-output name=workspace-url::${WORKSPACE_URL}"
+      - name: Launch Tests
+        id: launch-tests
+        uses: cypress-io/github-action@v2
+        with:
+          browser: chrome
+          headless: true
+          config: pageLoadTimeout=100000,baseUrl=${{ steps.start-workspace.outputs.che-token }}
+      - uses: actions/upload-artifact@v1
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+      # Test run video was always captured, so this action uses "always()" condition
+      - uses: actions/upload-artifact@v1
+        if: always()
+        with:
+          name: cypress-videos
+          path: cypress/videos          
           
