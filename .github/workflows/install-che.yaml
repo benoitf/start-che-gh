@@ -28,7 +28,7 @@ jobs:
         with:
           browser: chrome
           headless: true
-          config: pageLoadTimeout=100000,baseUrl=${{ steps.start-workspace.outputs.che-token }}
+          config: pageLoadTimeout=100000,baseUrl=${{ steps.start-workspace.outputs.workspace-url }}
       - uses: actions/upload-artifact@v1
         if: failure()
         with:
