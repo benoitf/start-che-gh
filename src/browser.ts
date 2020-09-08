@@ -1,11 +1,13 @@
 import 'chromedriver';
 import { Builder, ThenableWebDriver, WebElement, By, WebElementPromise } from 'selenium-webdriver';
+import { Options } from 'selenium-webdriver/chrome';
 import { WaitCondition } from './condition';
 
 export class Browser {
   public driver: ThenableWebDriver;
   public constructor(private browserName: string) {
-    this.driver = new Builder().forBrowser(browserName).build();
+    const options: Options = new Options().headless().addArguments("--no-sandbox", "--disable-gpu", "--disabledev-shm-usage", "--disable-extensions");
+    this.driver = new Builder().forBrowser(browserName).setChromeOptions(options).build();
   }
 
   public async navigate(url: string): Promise<void> {
