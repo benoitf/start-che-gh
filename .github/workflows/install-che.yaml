@@ -22,18 +22,18 @@ jobs:
           WORKSPACE_URL=$(cat workspace.log | grep "https://")
           echo "found URL set to ${WORKSPACE_URL}"
           echo "::set-output name=workspace-url::${WORKSPACE_URL}"
-          oc project che
-          pods=$(oc get pods --all-namespaces -l che.workspace_id --field-selector status.phase=Running 2>&1)
+          
+          pods=$(kubectl get pods --all-namespaces -l che.workspace_id --field-selector status.phase=Running 2>&1)
           while [ "$pods" == 'No resources found.'  ];
             do
               echo "No pod found with che.workspace_id"
               echo "Current available pods are"
-              oc get pods
+              kubectl get pods -n che
               echo "Current deployments are"
-              oc get deployments
-              oc get pods --all-namespaces -l che.workspace_id
+              kubectl get deployments -n che
+              kubectl get pods --all-namespaces -l che.workspace_id
               sleep 5
-              pods=$(oc get pods --all-namespaces -l che.workspace_id --field-selector status.phase=Running 2>&1)
+              pods=$(kubectl get pods --all-namespaces -l che.workspace_id --field-selector status.phase=Running 2>&1)
             done
           echo "End of wait for a running workspace"
       - name: Launch Tests
