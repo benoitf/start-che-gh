@@ -8,7 +8,7 @@ import { WebElementPromise, until, By, WebElement } from 'selenium-webdriver';
 
 export class TheiaIDEPage extends Page {
 
-  static PREPARING_WS_TIMEOUT_SEC = 120 * 1000;
+  static PREPARING_WS_TIMEOUT_SEC = 8 * 60 * 1000;
   static LOADER_TIMEOUT_SEC = 20 * 1000;
 
   static NOTIFICATION_ITEM_XPATH =

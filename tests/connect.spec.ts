@@ -14,17 +14,15 @@ describe('Submit ideas', () => {
   beforeEach(async () => {
     browser = new Browser('chrome')
     pages = new AllPages(browser);
-   // jest.setTimeout(180000);
-
+    jest.setTimeout(500000);
   });
 
-  it.only('Google check', async () => {
-
+  it('Google check', async () => {
     await browser.navigate('https://www.google.fr');
     const body = By.id("fsl");
     const content: WebElement[] = await browser.driver.wait(until.elementsLocated(body));
     const innerHtml = await content[0].getAttribute("innerHTML");
-    expect(innerHtml).toContain('Comment');
+    expect(innerHtml).toContain('Advertising');
   });
 
 
@@ -37,6 +35,7 @@ describe('Submit ideas', () => {
     // open workspace
     const workspaceUrl: string | undefined = env.CHE_WORKSPACE_URL;
     expect(workspaceUrl).toBeDefined();
+    console.log('url is /' + workspaceUrl + '/');
     await browser.navigate(workspaceUrl!);
 
     // wait the workspace is ready to use
