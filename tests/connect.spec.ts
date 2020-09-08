@@ -11,16 +11,23 @@ describe('Submit ideas', () => {
   let pages: AllPages;
   let browser: Browser;
 
-  function timeout(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
   beforeEach(async () => {
     browser = new Browser('chrome')
     pages = new AllPages(browser);
-    jest.setTimeout(180000);
+   // jest.setTimeout(180000);
 
   });
+
+  it.only('Google check', async () => {
+
+    await browser.navigate('https://www.google.fr');
+    const body = By.id("fsl");
+    const content: WebElement[] = await browser.driver.wait(until.elementsLocated(body));
+    const innerHtml = await content[0].getAttribute("innerHTML");
+    expect(innerHtml).toContain('Comment');
+  });
+
+
 
   it('Java workspace', async () => {
 
