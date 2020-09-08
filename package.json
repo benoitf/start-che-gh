@@ -1,0 +1,38 @@
+{
+  "devDependencies": {
+    "@types/jest": "^26.0.13",
+    "@types/node": "^12.0.0",
+    "@types/selenium-webdriver": "^4.0.9",
+    "chromedriver": "^85.0.0",
+    "jest": "^26.4.2",
+    "reflect-metadata": "^0.1.13",
+    "selenium-webdriver": "^4.0.0-alpha.7",
+    "ts-jest": "^26.3.0",
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.2"
+  },
+  "scripts": {
+    "test": "rm -rf dist && tsc && jest"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coverageDirectory": "./coverage",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "modulePathIgnorePatterns": [
+      "<rootDir>/dist"
+    ],
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ]
+  }
+}

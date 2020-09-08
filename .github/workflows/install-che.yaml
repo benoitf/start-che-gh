@@ -17,27 +17,15 @@ jobs:
         run: |
           echo "Eclipse Che URL: ${{ steps.setup-che.outputs.che-url }}"
           echo "create workspace and start it..."
-          chectl workspace:create --start --access-token ${{ steps.setup-che.outputs.che-token }} --devfile=https://gist.githubusercontent.com/benoitf/6f2c761690646c930ea728e85054e43c/raw/620e0fca2911f62534007ca21769eee966ca9649/devfile-projects.yaml  2>&1 | tee workspace.log
+          chectl workspace:create --start --access-token ${{ steps.setup-che.outputs.che-token }} --devfile=https://gist.githubusercontent.com/benoitf/4b60722b88d5a965c63d9e3cbeb6234c/raw/4bfaac092cf7ec7c5f5805243ef8a3e3e120c875/api-tests-devfile.yaml  2>&1 | tee workspace.log
           echo "workspace started"
           WORKSPACE_URL=$(cat workspace.log | grep "https://")
           echo "found URL set to ${WORKSPACE_URL}"
           echo "::set-output name=workspace-url::${WORKSPACE_URL}"
       - name: Launch Tests
         id: launch-tests
-        uses: cypress-io/github-action@v2
-        with:
-          browser: chrome
-          headless: true
-          config: pageLoadTimeout=100000,baseUrl=${{ steps.start-workspace.outputs.workspace-url }}
-      - uses: actions/upload-artifact@v1
-        if: failure()
-        with:
-          name: cypress-screenshots
-          path: cypress/screenshots
-      # Test run video was always captured, so this action uses "always()" condition
-      - uses: actions/upload-artifact@v1
-        if: always()
-        with:
-          name: cypress-videos
-          path: cypress/videos          
-          
+        run: |
+          yarn
+          export CHE_WORKSPACE_URL=${{ steps.start-workspace.outputs.workspace-url }}
+          yarn run test
+      
