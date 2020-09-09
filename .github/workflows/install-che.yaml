@@ -10,6 +10,7 @@ jobs:
       - name: start chrome and record
         id: record-chrome
         run: |
+           sudo apt-get update && apt-get install -y ffmpeg
            kill_ffmpeg(){
              echo "Killing ffmpeg with PID=$ffmpeg_pid"
              kill -2 "$ffmpeg_pid"
