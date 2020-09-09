@@ -57,6 +57,8 @@ jobs:
               pods=$(kubectl get pods --all-namespaces -l che.workspace_id --field-selector status.phase=Running 2>&1)
             done
           echo "End of wait for a running workspace"
+          echo "wait 3mn for the workspace startup"
+          sleep 180
       - name: Launch Tests
         id: launch-tests
         run: |
