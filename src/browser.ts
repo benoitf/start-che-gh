@@ -6,7 +6,7 @@ import { WaitCondition } from './condition';
 export class Browser {
   public driver: ThenableWebDriver;
   public constructor(private browserName: string) {
-    const options: Options = new Options().headless().addArguments("--no-sandbox", "--disable-gpu", "--disabledev-shm-usage", "--disable-extensions");
+    const options: Options = new Options().addArguments('--ignore-certificate-errors').headless().addArguments("--no-sandbox", "--disable-gpu", "--disabledev-shm-usage", "--disable-extensions");
     this.driver = new Builder().forBrowser(browserName).setChromeOptions(options).build();
   }
 

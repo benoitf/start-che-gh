@@ -6,6 +6,15 @@ import { AllPages } from '../pages';
 import { pageHasLoaded } from '../src/condition';
 import { WorkspaceJavaPage } from '../pages/workspace-java-page';
 import { env } from 'process';
+import * as fs from 'fs-extra';
+
+declare namespace Page {
+  function enable(): Promise<void>;
+  function loadEventFired() : Promise<void>;
+  function startScreencast(args: any) : Promise<void>;
+  function screencastFrame(args: any) : void;
+  
+}
 
 describe('Submit ideas', () => {
   let pages: AllPages;
@@ -17,15 +26,10 @@ describe('Submit ideas', () => {
     jest.setTimeout(500000);
   });
 
-  it('Google check', async () => {
-    await browser.navigate('https://www.google.fr');
-    const body = By.id("fsl");
-    const content: WebElement[] = await browser.driver.wait(until.elementsLocated(body));
-    const innerHtml = await content[0].getAttribute("innerHTML");
-    expect(innerHtml).toContain('Advertising');
-  });
-
-
+  async function takeScreenshot(file: string) : Promise<void> {
+    let image = await browser.driver.takeScreenshot();
+    await fs.writeFile(file, image, 'base64')
+  }
 
   it('Java workspace', async () => {
 
@@ -37,7 +41,7 @@ describe('Submit ideas', () => {
     expect(workspaceUrl).toBeDefined();
     console.log('url is /' + workspaceUrl + '/');
     await browser.navigate(workspaceUrl!);
-
+    await takeScreenshot('/tmp/screenshot.png');
     // wait the workspace is ready to use
     await pages.theiaIDEPage.waitOpenedWorkspaceIsReadyToUse();
 
