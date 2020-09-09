@@ -28,15 +28,15 @@ jobs:
            echo "ffmpeg pid is ${ffmpeg_pid}"
            trap kill_ffmpeg 2 15
            echo "ffmpeg error:"
-           cat /tmp/ffmpeg_report/ffmpeg_err.txt 
+           cat /tmp/ffmpeg_report/ffmpeg_err.txt || echo "no error"
            echo "ffmpeg output:"
-           cat /tmp/ffmpeg_report/ffmpeg_std.txt
+           cat /tmp/ffmpeg_report/ffmpeg_std.txt || echo "no stdout"
            chromedriver --url-base=http://www.google.fr &
            sleep 20
            echo "ffmpeg error:"
-           cat /tmp/ffmpeg_report/ffmpeg_err.txt 
+           cat /tmp/ffmpeg_report/ffmpeg_err.txt || echo "no error"
            echo "ffmpeg output:"
-           cat /tmp/ffmpeg_report/ffmpeg_std.txt
+           cat /tmp/ffmpeg_report/ffmpeg_std.txt || echo "no stdout"
            echo "end sleeping, killing ffmpeg"
            kill_ffmpeg
       - name: upload artifacts
