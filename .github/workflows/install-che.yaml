@@ -15,9 +15,13 @@ jobs:
            kill_ffmpeg(){
              echo "Killing ffmpeg with PID=$ffmpeg_pid"
              kill -2 "$ffmpeg_pid"
+             echo "wait pid..."
              wait "$ffmpeg_pid"
+             echo "done"
              mkdir -p /tmp/e2e/report/
+             echo "copy"
              cp /tmp/ffmpeg_report/* /tmp/e2e/report/
+             return 0
            }
            mkdir -p /tmp/ffmpeg_report
            # export DISPLAY=:99
