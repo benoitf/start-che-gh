@@ -37,7 +37,8 @@ jobs:
            cat /tmp/ffmpeg_report/ffmpeg_err.txt || echo "no error"
            echo "ffmpeg output:"
            cat /tmp/ffmpeg_report/ffmpeg_std.txt || echo "no stdout"
-           chromedriver --url-base=http://www.google.fr &
+           chrome http://www.google.fr &
+           xterm&
            sleep 20
            echo "ffmpeg error:"
            cat /tmp/ffmpeg_report/ffmpeg_err.txt || echo "no error"
