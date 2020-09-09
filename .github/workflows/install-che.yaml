@@ -7,16 +7,16 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: start chrome and record
-        id: record-chrome
+      - name: Record Display
+        id: record-display
         run: |
            sudo apt-get update
-           sudo apt-get install -y ffmpeg
-           kill_ffmpeg(){
-             echo "Killing ffmpeg with PID=$ffmpeg_pid"
-             kill -2 "$ffmpeg_pid"
+           sudo apt-get install -y ffmpeg xclock
+           export kill_ffmpeg($1) {
+             echo "Killing ffmpeg with PID=$1"
+             kill -2 "$1"
              echo "wait pid..."
-             wait "$ffmpeg_pid" || echo "wait finished"
+             wait "$1" || echo "wait finished"
              echo "done"
              mkdir -p /tmp/e2e/report/
              echo "copy"
@@ -30,22 +30,20 @@ jobs:
            export DISPLAY=':20'
            Xvfb :20 -screen 0 1920x1080x24 > /dev/null 2>&1 &
            nohup ffmpeg -y -video_size 1920x1080 -framerate 24 -f x11grab -i :20.0 /tmp/ffmpeg_report/output.mp4 2> /tmp/ffmpeg_report/ffmpeg_err.txt > /tmp/ffmpeg_report/ffmpeg_std.txt &
-           ffmpeg_pid=$!
-           echo "ffmpeg pid is ${ffmpeg_pid}"
+           FFMPEG_PID=$!
+           echo "ffmpeg pid is ${FFMPEG_PID}"
+           echo "::set-output name=ffmpeg-pid::${FFMPEG_PID}"
            trap kill_ffmpeg 2 15
            echo "ffmpeg error:"
+           xclock&
+           sleep 5
            cat /tmp/ffmpeg_report/ffmpeg_err.txt || echo "no error"
            echo "ffmpeg output:"
            cat /tmp/ffmpeg_report/ffmpeg_std.txt || echo "no stdout"
-           chrome http://www.google.fr &
-           xterm&
-           sleep 20
-           echo "ffmpeg error:"
-           cat /tmp/ffmpeg_report/ffmpeg_err.txt || echo "no error"
-           echo "ffmpeg output:"
-           cat /tmp/ffmpeg_report/ffmpeg_std.txt || echo "no stdout"
-           echo "end sleeping, killing ffmpeg"
-           kill_ffmpeg
+      - name: End Record Display
+        id: end-record-display
+        run: |
+           kill_ffmpeg ${{ steps.record-display.outputs.ffmpeg-pid}}
       - name: upload artifacts
         id: upload-artifacts
         uses: actions/upload-artifact@v2
