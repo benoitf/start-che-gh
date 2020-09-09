@@ -25,17 +25,55 @@ jobs:
            echo "::set-output name=ffmpeg-pid::${FFMPEG_PID}"
            trap kill_ffmpeg 2 15
            echo "ffmpeg error:"
-           xclock&
-           sleep 5
            cat /tmp/ffmpeg_report/ffmpeg_err.txt || echo "no error"
            echo "ffmpeg output:"
            cat /tmp/ffmpeg_report/ffmpeg_std.txt || echo "no stdout"
+      - name: Setup che
+        id: setup-che
+        uses: benoitf/che-install-gh-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Start Workspace
+        id: start-workspace
+        run: |
+          echo "Eclipse Che URL: ${{ steps.setup-che.outputs.che-url }}"
+          echo "create workspace and start it..."
+          chectl workspace:create --start --access-token ${{ steps.setup-che.outputs.che-token }} --devfile=https://gist.githubusercontent.com/benoitf/4b60722b88d5a965c63d9e3cbeb6234c/raw/4bfaac092cf7ec7c5f5805243ef8a3e3e120c875/api-tests-devfile.yaml  2>&1 | tee workspace.log
+          echo "workspace started"
+          WORKSPACE_URL=$(cat workspace.log | grep "https://")
+          echo "found URL set to ${WORKSPACE_URL}"
+          echo "::set-output name=workspace-url::${WORKSPACE_URL}"
+          
+          pods=$(kubectl get pods --all-namespaces -l che.workspace_id --field-selector status.phase=Running 2>&1)
+          while [ "$pods" == 'No resources found.'  ];
+            do
+              echo "No pod found with che.workspace_id"
+              echo "Current available pods are"
+              kubectl get pods -n che
+              echo "Current deployments are"
+              kubectl get deployments -n che
+              kubectl get pods --all-namespaces -l che.workspace_id
+              sleep 5
+              pods=$(kubectl get pods --all-namespaces -l che.workspace_id --field-selector status.phase=Running 2>&1)
+            done
+          echo "End of wait for a running workspace"
+      - name: Launch Tests
+        id: launch-tests
+        run: |
+          export CHE_WORKSPACE_URL=${{ steps.start-workspace.outputs.workspace-url }}
+          echo "The workspace URL will be =${CHE_WORKSPACE_URL}="
+          curl -k ${CHE_WORKSPACE_URL}
+          export DISPLAY=':20'
+          yarn
+          yarn run test
+      
       - name: End Record Display
         id: end-record-display
         run: |
            FFMPEG_PID=${{ steps.record-display.outputs.ffmpeg-pid}}
            echo "Killing ffmpeg with PID=$FFMPEG_PID"
            kill -2 "$FFMPEG_PID"
+           sleep 5
            echo "wait pid..."
            wait "$FFMPEG_PID" || echo "wait finished"
            echo "done"

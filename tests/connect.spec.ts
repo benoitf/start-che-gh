@@ -21,7 +21,7 @@ describe('Submit ideas', () => {
   let browser: Browser;
 
   beforeEach(async () => {
-    browser = new Browser('chrome')
+    browser = new Browser('firefox')
     pages = new AllPages(browser);
     jest.setTimeout(500000);
   });
