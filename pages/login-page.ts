@@ -24,7 +24,7 @@ export class LoginPage extends Page {
   }
 
   public async signIn(): Promise<void> {
-    await this.browser.wait(pageHasLoaded(LoginPage));
+    await this.browser.wait(pageHasLoaded(LoginPage),);
     await this.userName.type('admin');
     await this.password.type('admin');
     await this.loginButton.click();

@@ -38,10 +38,13 @@ describe('Submit ideas', () => {
     console.log('url is /' + workspaceUrl + '/');
 
     // login first
+    console.log('navigate to login page');
     await pages.loginPage.navigate();
+    console.log('sign in');
     await pages.loginPage.signIn();
 
     // open workspace
+    console.log('open workspace...');
     await browser.navigate(workspaceUrl!);
     await takeScreenshot('/tmp/screenshot.png');
     // wait the workspace is ready to use
