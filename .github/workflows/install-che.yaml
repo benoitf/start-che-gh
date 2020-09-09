@@ -18,7 +18,6 @@ jobs:
              wait "$ffmpeg_pid"
              mkdir -p /tmp/e2e/report/
              cp /tmp/ffmpeg_report/* /tmp/e2e/report/
-             exit $EXIT_CODE
            }
            mkdir -p /tmp/ffmpeg_report
            # export DISPLAY=:99
