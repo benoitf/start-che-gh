@@ -69,6 +69,7 @@ jobs:
       
       - name: End Record Display
         id: end-record-display
+        if: ${{ always() }}
         run: |
            FFMPEG_PID=${{ steps.record-display.outputs.ffmpeg-pid}}
            echo "Killing ffmpeg with PID=$FFMPEG_PID"
@@ -81,6 +82,7 @@ jobs:
            echo "copy"
            cp /tmp/ffmpeg_report/* /tmp/e2e/report/
       - name: upload artifacts
+        if: ${{ always() }}
         id: upload-artifacts
         uses: actions/upload-artifact@v2
         with:
