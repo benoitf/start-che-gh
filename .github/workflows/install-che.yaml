@@ -12,17 +12,6 @@ jobs:
         run: |
            sudo apt-get update
            sudo apt-get install -y ffmpeg x11-apps
-           kill_ffmpeg() {
-             echo "Killing ffmpeg with PID=$1"
-             kill -2 "$1"
-             echo "wait pid..."
-             wait "$1" || echo "wait finished"
-             echo "done"
-             mkdir -p /tmp/e2e/report/
-             echo "copy"
-             cp /tmp/ffmpeg_report/* /tmp/e2e/report/
-             return 0
-           }
            mkdir -p /tmp/ffmpeg_report
            # export DISPLAY=:99
            # sudo Xvfb -ac :99 -screen 0 1280x1024x24 &
@@ -43,7 +32,15 @@ jobs:
       - name: End Record Display
         id: end-record-display
         run: |
-           kill_ffmpeg ${{ steps.record-display.outputs.ffmpeg-pid}}
+           FFMPEG_PID=${{ steps.record-display.outputs.ffmpeg-pid}}
+           echo "Killing ffmpeg with PID=$FFMPEG_PID"
+           kill -2 "$1"
+           echo "wait pid..."
+           wait "$FFMPEG_PID" || echo "wait finished"
+           echo "done"
+           mkdir -p /tmp/e2e/report/
+           echo "copy"
+           cp /tmp/ffmpeg_report/* /tmp/e2e/report/
       - name: upload artifacts
         id: upload-artifacts
         uses: actions/upload-artifact@v2
