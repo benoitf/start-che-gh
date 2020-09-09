@@ -11,23 +11,15 @@ jobs:
         id: record-display
         run: |
            sudo apt-get update
-           sudo apt-get install -y ffmpeg x11-apps
+           sudo apt-get install -y ffmpeg
            mkdir -p /tmp/ffmpeg_report
-           # export DISPLAY=:99
-           # sudo Xvfb -ac :99 -screen 0 1280x1024x24 &
-           # nohup ffmpeg -y -video_size 1920x1080 -framerate 24 -f x11grab -i :99.0 /tmp/ffmpeg_report/output.mp4 2> /tmp/ffmpeg_report/ffmpeg_err.txt > /tmp/ffmpeg_report/ffmpeg_std.txt & 
            export DISPLAY=':20'
            Xvfb :20 -screen 0 1920x1080x24 > /dev/null 2>&1 &
            sleep 3
            nohup ffmpeg -y -video_size 1920x1080 -framerate 24 -f x11grab -i :20.0 /tmp/ffmpeg_report/output.mp4 2> /tmp/ffmpeg_report/ffmpeg_err.txt > /tmp/ffmpeg_report/ffmpeg_std.txt &
            FFMPEG_PID=$!
-           echo "ffmpeg pid is ${FFMPEG_PID}"
            echo "::set-output name=ffmpeg-pid::${FFMPEG_PID}"
            trap kill_ffmpeg 2 15
-           echo "ffmpeg error:"
-           cat /tmp/ffmpeg_report/ffmpeg_err.txt || echo "no error"
-           echo "ffmpeg output:"
-           cat /tmp/ffmpeg_report/ffmpeg_std.txt || echo "no stdout"
       - name: Setup che
         id: setup-che
         uses: benoitf/che-install-gh-action@master
@@ -37,38 +29,26 @@ jobs:
         id: start-workspace
         run: |
           echo "Eclipse Che URL: ${{ steps.setup-che.outputs.che-url }}"
-          echo "create workspace and start it..."
           chectl workspace:create --start --access-token ${{ steps.setup-che.outputs.che-token }} --devfile=https://gist.githubusercontent.com/benoitf/4b60722b88d5a965c63d9e3cbeb6234c/raw/4bfaac092cf7ec7c5f5805243ef8a3e3e120c875/api-tests-devfile.yaml  2>&1 | tee workspace.log
-          echo "workspace started"
           WORKSPACE_URL=$(cat workspace.log | grep "https://")
           echo "found URL set to ${WORKSPACE_URL}"
           echo "::set-output name=workspace-url::${WORKSPACE_URL}"
-          
           pods=$(kubectl get pods --all-namespaces -l che.workspace_id --field-selector status.phase=Running 2>&1)
           while [ "$pods" == 'No resources found.'  ];
             do
-              echo "No pod found with che.workspace_id"
-              echo "Current available pods are"
               kubectl get pods -n che
-              echo "Current deployments are"
-              kubectl get deployments -n che
-              kubectl get pods --all-namespaces -l che.workspace_id
               sleep 5
               pods=$(kubectl get pods --all-namespaces -l che.workspace_id --field-selector status.phase=Running 2>&1)
             done
           echo "End of wait for a running workspace"
-          echo "wait 3mn for the workspace startup"
-          sleep 180
       - name: Launch Tests
         id: launch-tests
         run: |
           export CHE_WORKSPACE_URL=${{ steps.start-workspace.outputs.workspace-url }}
-          echo "The workspace URL will be =${CHE_WORKSPACE_URL}="
-          curl -k ${CHE_WORKSPACE_URL}
+          echo "Tests will use workspace URL ${CHE_WORKSPACE_URL}="
           export DISPLAY=':20'
           yarn
           yarn run test
-      
       - name: End Record Display
         id: end-record-display
         if: ${{ always() }}
@@ -77,18 +57,15 @@ jobs:
            echo "Killing ffmpeg with PID=$FFMPEG_PID"
            kill -2 "$FFMPEG_PID"
            sleep 5
-           echo "wait pid..."
            wait "$FFMPEG_PID" || echo "wait finished"
-           echo "done"
            mkdir -p /tmp/e2e/report/
-           echo "copy"
            cp /tmp/ffmpeg_report/* /tmp/e2e/report/
       - name: upload artifacts
         if: ${{ always() }}
         id: upload-artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: report
+          name: video
           path: /tmp/e2e/report/
       - name: Start SSH via Ngrok
         if: ${{ failure() }}
@@ -96,6 +73,6 @@ jobs:
         env:
          NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
          USER_PASS: ${{ secrets.NGROK_PASS }}
-      - name: Don't kill instace
+      - name: Wait 1hour before shutting down instance
         if: ${{ failure() }}
-        run: sleep 1h # Prevent to killing instance after failure
+        run: sleep 1h

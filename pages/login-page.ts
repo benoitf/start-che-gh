@@ -1,31 +1,24 @@
-import { Page } from '../src/page';
+import { By, until } from 'selenium-webdriver';
+
 import { Browser } from '../src/browser';
-import { findBy } from '../src/find-by';
-import { TextInput, Button, WebComponent } from '../src/element';
-import { pageHasLoaded, elementIsVisible } from '../src/condition';
+import { Page } from '../src/page';
 
 export class LoginPage extends Page {
   constructor(browser: Browser) {
     super(browser);
   }
 
-  @findBy('input#username')
-  public userName: TextInput;
-
-  @findBy('input#password')
-  public password: TextInput;
-  
-  @findBy('input#kc-login')
-  public loginButton: Button;
-  
-  public loadCondition() {
-    return elementIsVisible(() => this.userName);
-  }
+  public userName: By = By.id('username');
+  public password: By = By.id('password');
+  public loginButton: By = By.id('kc-login');
 
   public async signIn(): Promise<void> {
-    await this.browser.wait(pageHasLoaded(LoginPage),);
-    await this.userName.type('admin');
-    await this.password.type('admin');
-    await this.loginButton.click();
+    const userNameElement = await this.browser.driver.wait(until.elementLocated(this.userName));
+    await this.browser.driver.wait(until.elementIsVisible(userNameElement));
+    await userNameElement.sendKeys('admin');
+    const passwordElement = await this.browser.driver.wait(until.elementLocated(this.password));
+    await passwordElement.sendKeys('admin');
+    const loginButtonElement = await this.browser.driver.wait(until.elementLocated(this.loginButton));
+    await loginButtonElement.click();
   }
 }
