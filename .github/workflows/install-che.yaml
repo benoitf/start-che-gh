@@ -12,7 +12,7 @@ jobs:
         run: |
            sudo apt-get update
            sudo apt-get install -y ffmpeg x11-apps
-           export kill_ffmpeg($1) {
+           export kill_ffmpeg() {
              echo "Killing ffmpeg with PID=$1"
              kill -2 "$1"
              echo "wait pid..."
