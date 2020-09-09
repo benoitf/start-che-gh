@@ -21,9 +21,13 @@ jobs:
            export DISPLAY=:99
            sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
            mkdir -p /tmp/ffmpeg_report
-           nohup ffmpeg -y -video_size 1920x1080 -framerate 24 -f x11grab -i :20.0 /tmp/ffmpeg_report/output.mp4 2> /tmp/ffmpeg_report/ffmpeg_err.txt > /tmp/ffmpeg_report/ffmpeg_std.txt & 
+           nohup ffmpeg -y -video_size 1920x1080 -framerate 24 -f x11grab -i :99.0 /tmp/ffmpeg_report/output.mp4 2> /tmp/ffmpeg_report/ffmpeg_err.txt > /tmp/ffmpeg_report/ffmpeg_std.txt & 
            ffmpeg_pid=$!
            trap kill_ffmpeg 2 15
+           echo "ffmpeg error:"
+           cat /tmp/ffmpeg_report/ffmpeg_err.txt 
+           echo "ffmpeg output:"
+           cat /tmp/ffmpeg_report/ffmpeg_std.txt
            chromedriver --url-base=http://www.google.fr &
            sleep 20
            kill_ffmpeg
