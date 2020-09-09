@@ -7,8 +7,9 @@ export class AllPages {
     public loginPage: LoginPage;
     public theiaIDEPage: TheiaIDEPage;
 
-    constructor(public browser: Browser) {
+    constructor(public browser: Browser, url:string) {
       this.loginPage = new LoginPage(browser);
+      this.loginPage.setUrl(url);
       this.theiaIDEPage = new TheiaIDEPage(browser);
     }
 

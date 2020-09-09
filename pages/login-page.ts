@@ -7,7 +7,6 @@ import { pageHasLoaded, elementIsVisible } from '../src/condition';
 export class LoginPage extends Page {
   constructor(browser: Browser) {
     super(browser);
-    this.setUrl(`https://che-che.192.168.64.13.nip.io`);
   }
 
   @findBy('input#username')
