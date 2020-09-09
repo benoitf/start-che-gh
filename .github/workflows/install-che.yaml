@@ -7,41 +7,29 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Setup che
-        id: setup-che
-        uses: benoitf/che-install-gh-action@master
+      - name: start chrome and record
+        id: record-chrome
+        run: |
+           kill_ffmpeg(){
+             echo "Killing ffmpeg with PID=$ffmpeg_pid"
+             kill -2 "$ffmpeg_pid"
+             wait "$ffmpeg_pid"
+             mkdir -p /tmp/e2e/report/
+             cp /tmp/ffmpeg_report/* /tmp/e2e/report/
+             exit $EXIT_CODE
+           }
+           export DISPLAY=:99
+           sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
+           mkdir -p /tmp/ffmpeg_report
+           nohup ffmpeg -y -video_size 1920x1080 -framerate 24 -f x11grab -i :20.0 /tmp/ffmpeg_report/output.mp4 2> /tmp/ffmpeg_report/ffmpeg_err.txt > /tmp/ffmpeg_report/ffmpeg_std.txt & 
+           ffmpeg_pid=$!
+           trap kill_ffmpeg 2 15
+           chromedriver --url-base=http://www.google.fr &
+           sleep 20
+           kill_ffmpeg
+      - name: upload artifacts
+        id: upload-artifacts
+        uses: actions/upload-artifact@v2
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Start Workspace
-        id: start-workspace
-        run: |
-          echo "Eclipse Che URL: ${{ steps.setup-che.outputs.che-url }}"
-          echo "create workspace and start it..."
-          chectl workspace:create --start --access-token ${{ steps.setup-che.outputs.che-token }} --devfile=https://gist.githubusercontent.com/benoitf/4b60722b88d5a965c63d9e3cbeb6234c/raw/4bfaac092cf7ec7c5f5805243ef8a3e3e120c875/api-tests-devfile.yaml  2>&1 | tee workspace.log
-          echo "workspace started"
-          WORKSPACE_URL=$(cat workspace.log | grep "https://")
-          echo "found URL set to ${WORKSPACE_URL}"
-          echo "::set-output name=workspace-url::${WORKSPACE_URL}"
-          
-          pods=$(kubectl get pods --all-namespaces -l che.workspace_id --field-selector status.phase=Running 2>&1)
-          while [ "$pods" == 'No resources found.'  ];
-            do
-              echo "No pod found with che.workspace_id"
-              echo "Current available pods are"
-              kubectl get pods -n che
-              echo "Current deployments are"
-              kubectl get deployments -n che
-              kubectl get pods --all-namespaces -l che.workspace_id
-              sleep 5
-              pods=$(kubectl get pods --all-namespaces -l che.workspace_id --field-selector status.phase=Running 2>&1)
-            done
-          echo "End of wait for a running workspace"
-      - name: Launch Tests
-        id: launch-tests
-        run: |
-          export CHE_WORKSPACE_URL=${{ steps.start-workspace.outputs.workspace-url }}
-          echo "The workspace URL will be =${CHE_WORKSPACE_URL}="
-          curl -k ${CHE_WORKSPACE_URL}
-          yarn
-          yarn run test
-      
+          name: report
+          path: /tmp/e2e/report/
