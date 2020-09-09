@@ -41,6 +41,7 @@ jobs:
         run: |
           export CHE_WORKSPACE_URL=${{ steps.start-workspace.outputs.workspace-url }}
           echo "The workspace URL will be =${CHE_WORKSPACE_URL}="
+          curl -k ${CHE_WORKSPACE_URL}
           yarn
           yarn run test
       

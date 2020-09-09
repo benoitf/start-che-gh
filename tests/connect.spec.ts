@@ -33,13 +33,15 @@ describe('Submit ideas', () => {
 
   it('Java workspace', async () => {
 
+    const workspaceUrl: string | undefined = env.CHE_WORKSPACE_URL;
+    expect(workspaceUrl).toBeDefined();
+    console.log('url is /' + workspaceUrl + '/');
+
+    // login first
     await pages.loginPage.navigate();
     await pages.loginPage.signIn();
 
     // open workspace
-    const workspaceUrl: string | undefined = env.CHE_WORKSPACE_URL;
-    expect(workspaceUrl).toBeDefined();
-    console.log('url is /' + workspaceUrl + '/');
     await browser.navigate(workspaceUrl!);
     await takeScreenshot('/tmp/screenshot.png');
     // wait the workspace is ready to use
