@@ -1,17 +1,17 @@
 import 'chromedriver';
 import { Builder, ThenableWebDriver, WebElement, By, WebElementPromise } from 'selenium-webdriver';
-//import { Options } from 'selenium-webdriver/chrome';
-import { Options } from 'selenium-webdriver/firefox';
+import { Options } from 'selenium-webdriver/chrome';
+//import { Options } from 'selenium-webdriver/firefox';
 import { WaitCondition } from './condition';
 
 export class Browser {
   public driver: ThenableWebDriver;
   public constructor(private browserName: string) {
-    //const options: Options = new Options().addArguments('--ignore-certificate-errors').headless().addArguments("--no-sandbox", "--disable-gpu", "--disabledev-shm-usage", "--disable-extensions");
-    //this.driver = new Builder().forBrowser(browserName).setChromeOptions(options).build();
-    const options: Options = new Options();//.headless();
+    const options: Options = new Options().addArguments('--ignore-certificate-errors').addArguments("--no-sandbox", "--disable-gpu", "--disabledev-shm-usage", "--disable-extensions");
+    this.driver = new Builder().forBrowser(browserName).setChromeOptions(options).build();
+    // const options: Options = new Options();//.headless();
     //.addArguments('--ignore-certificate-errors').headless().addArguments("--no-sandbox", "--disable-gpu", "--disabledev-shm-usage", "--disable-extensions");
-    this.driver = new Builder().forBrowser(browserName).withCapabilities(new Options().setAcceptInsecureCerts(true)).setFirefoxOptions(options).build();
+    //this.driver = new Builder().forBrowser(browserName).withCapabilities(new Options().setAcceptInsecureCerts(true)).setFirefoxOptions(options).build();
   }
 
   public async navigate(url: string): Promise<void> {
