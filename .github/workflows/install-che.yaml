@@ -35,7 +35,7 @@ jobs:
         run: |
            FFMPEG_PID=${{ steps.record-display.outputs.ffmpeg-pid}}
            echo "Killing ffmpeg with PID=$FFMPEG_PID"
-           kill -2 "$1"
+           kill -2 "$FFMPEG_PID"
            echo "wait pid..."
            wait "$FFMPEG_PID" || echo "wait finished"
            echo "done"
