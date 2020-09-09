@@ -8,7 +8,7 @@ export interface NewablePage<T extends Page> {
 export abstract class Page {
   private url: string;
 
-  protected setUrl(url: string) {
+  public setUrl(url: string) {
     this.url = url;
   }
 

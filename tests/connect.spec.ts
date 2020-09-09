@@ -19,10 +19,15 @@ declare namespace Page {
 describe('Submit ideas', () => {
   let pages: AllPages;
   let browser: Browser;
+  let workspaceUrl: string | undefined;
 
   beforeEach(async () => {
     browser = new Browser('chrome')
-    pages = new AllPages(browser);
+    workspaceUrl = env.CHE_WORKSPACE_URL;
+    expect(workspaceUrl).toBeDefined();
+    console.log('url is /' + workspaceUrl + '/');
+
+    pages = new AllPages(browser, workspaceUrl!);
     jest.setTimeout(500000);
   });
 
@@ -33,9 +38,6 @@ describe('Submit ideas', () => {
 
   it('Java workspace', async () => {
 
-    const workspaceUrl: string | undefined = env.CHE_WORKSPACE_URL;
-    expect(workspaceUrl).toBeDefined();
-    console.log('url is /' + workspaceUrl + '/');
 
     // login first
     console.log('navigate to login page');

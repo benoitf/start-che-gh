@@ -3,14 +3,26 @@ import { Builder, ThenableWebDriver, WebElement, By, WebElementPromise } from 's
 import { Options } from 'selenium-webdriver/chrome';
 //import { Options } from 'selenium-webdriver/firefox';
 import { WaitCondition } from './condition';
+import { PageLoadStrategy } from 'selenium-webdriver/lib/capabilities';
 
 export class Browser {
   public driver: ThenableWebDriver;
   public constructor(private browserName: string) {
-    const options: Options = new Options().addArguments('--ignore-certificate-errors').addArguments("--no-sandbox", "--disable-gpu", "--disabledev-shm-usage", "--disable-extensions");
+    const options: Options = new Options().addArguments('--ignore-certificate-errors').addArguments("--disabledev-shm-usage");
+    options.addArguments("enable-automation");
+    options.addArguments("--headless");
+    options.addArguments("--window-size=1920,1080");
+    options.addArguments("--no-sandbox");
+    options.addArguments("--disable-extensions");
+    options.addArguments("--dns-prefetch-disable");
+    options.addArguments("--disable-gpu");
+    options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
+    options.addArguments("enable-features=NetworkServiceInProcess");
+    options.addArguments("--disable-browser-side-navigation");
+    //options.addArguments("disable-features=NetworkService") 
     this.driver = new Builder().forBrowser(browserName).setChromeOptions(options).build();
-    // const options: Options = new Options();//.headless();
-    //.addArguments('--ignore-certificate-errors').headless().addArguments("--no-sandbox", "--disable-gpu", "--disabledev-shm-usage", "--disable-extensions");
+    //const options: Options = new Options().headless();
+    //options.addArguments('--ignore-certificate-errors').headless().addArguments("--no-sandbox", "--disable-gpu", "--disabledev-shm-usage", "--disable-extensions");
     //this.driver = new Builder().forBrowser(browserName).withCapabilities(new Options().setAcceptInsecureCerts(true)).setFirefoxOptions(options).build();
   }
 
