@@ -1,0 +1,98 @@
+name: che-install
+on: push
+jobs:
+  install:
+    name: setup che
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Record Display
+        id: record-display
+        run: |
+           echo "install ffmpeg"
+           sudo apt-get update
+           sudo apt-get install -y ffmpeg
+           mkdir -p /tmp/ffmpeg_report
+           export DISPLAY=':20'
+           Xvfb :20 -screen 0 1920x1080x24 > /dev/null 2>&1 &
+           sleep 3
+           nohup ffmpeg -y -video_size 1920x1080 -framerate 24 -f x11grab -i :20.0 /tmp/ffmpeg_report/output.mp4 2> /tmp/ffmpeg_report/ffmpeg_err.txt > /tmp/ffmpeg_report/ffmpeg_std.txt &
+           FFMPEG_PID=$!
+           echo "::set-output name=ffmpeg-pid::${FFMPEG_PID}"
+           trap kill_ffmpeg 2 15
+      - name: Setup che
+        id: setup-che
+        uses: benoitf/che-install-gh-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: clone Eclipse Che
+        id:clone-che
+        run: |
+           git clone https://github.com/eclipse/che
+      - name: Start Workspace
+        id: start-workspace
+        run: |
+          echo "Eclipse Che URL: ${{ steps.setup-che.outputs.che-url }}"
+          chectl workspace:create --start --access-token ${{ steps.setup-che.outputs.che-token }} --devfile=$(pwd)/che/che/tests/e2e/files/happy-path/happy-path-workspace.yaml  2>&1 | tee workspace.log
+          WORKSPACE_URL=$(cat workspace.log | grep "https://")
+          echo "found URL set to ${WORKSPACE_URL}"
+          echo "::set-output name=workspace-url::${WORKSPACE_URL}"
+          pods=$(kubectl get pods --all-namespaces -l che.workspace_id --field-selector status.phase=Running 2>&1)
+          while [ "$pods" == 'No resources found.'  ];
+            do
+              kubectl get pods -n che
+              sleep 5
+              pods=$(kubectl get pods --all-namespaces -l che.workspace_id --field-selector status.phase=Running 2>&1)
+            done
+          echo "End of wait for a running workspace"           
+      - name: Start Happy path tests
+        id: start-happy path tests
+        run: |
+          echo "Eclipse Che URL: ${{ steps.setup-che.outputs.che-url }}"
+          
+          CHE_URL=${{ steps.setup-che.outputs.che-url }}
+          docker pull quay.io/eclipse/happy-path:nightly
+          export DISPLAY=':20'
+          docker run --shm-size=1g --net=host --ipc=host \
+                     -p 5920:5920 \
+                     -e TS_SELENIUM_HEADLESS='false' \
+                     -e TS_SELENIUM_DEFAULT_TIMEOUT=300000 \
+                     -e TS_SELENIUM_LOAD_PAGE_TIMEOUT=240000 \
+                     -e TS_SELENIUM_WORKSPACE_STATUS_POLLING=20000 \
+                     -e TS_SELENIUM_BASE_URL=${CHE_URL} \
+                     -e TS_SELENIUM_LOG_LEVEL='DEBUG' \
+                     -e TS_SELENIUM_MULTIUSER="true" \
+                     -e TS_SELENIUM_USERNAME="admin" \
+                     -e TS_SELENIUM_PASSWORD="admin" \
+                     -v che/tests/e2e:/tmp/e2e:Z \
+                     -e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+                     quay.io/eclipse/che-e2e:nightly
+      - name: End Record Display
+        id: end-record-display
+        if: ${{ always() }}
+        run: |
+           FFMPEG_PID=${{ steps.record-display.outputs.ffmpeg-pid}}
+           echo "Killing ffmpeg with PID=$FFMPEG_PID"
+           kill -2 "$FFMPEG_PID"
+           sleep 5
+           wait "$FFMPEG_PID" || echo "wait finished"
+           mkdir -p /tmp/e2e/report/
+           cp /tmp/ffmpeg_report/* /tmp/e2e/report/
+      - name: upload artifacts
+        if: ${{ always() }}
+        id: upload-artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: video
+          path: /tmp/e2e/report/
+      - name: Start SSH via Ngrok
+        if: ${{ failure() }}
+        run: curl -sL https://gist.githubusercontent.com/retyui/7115bb6acf151351a143ec8f96a7c561/raw/7099b9db76729dc5761da72aa8525f632d8875c9/debug-github-actions.sh | bash
+        env:
+         NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
+         USER_PASS: ${{ secrets.NGROK_PASS }}
+      - name: Wait 1hour before shutting down instance
+        if: ${{ failure() }}
+        run: sleep 1h
+
