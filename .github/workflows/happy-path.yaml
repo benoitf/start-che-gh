@@ -27,7 +27,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: clone Eclipse Che
-        id:clone-che
+        id: clone-che
         run: |
            git clone https://github.com/eclipse/che
       - name: Start Workspace
