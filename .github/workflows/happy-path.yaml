@@ -47,7 +47,7 @@ jobs:
             done
           echo "End of wait for a running workspace"           
       - name: Start Happy path tests
-        id: start-happy path tests
+        id: start-happy-path-tests
         run: |
           echo "Eclipse Che URL: ${{ steps.setup-che.outputs.che-url }}"
           
