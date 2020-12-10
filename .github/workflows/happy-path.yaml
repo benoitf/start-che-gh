@@ -95,4 +95,3 @@ jobs:
       - name: Wait 1hour before shutting down instance
         if: ${{ failure() }}
         run: sleep 1h
-
