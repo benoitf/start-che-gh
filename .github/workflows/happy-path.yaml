@@ -34,14 +34,14 @@ jobs:
         id: start-workspace
         run: |
           echo "Eclipse Che URL: ${{ steps.setup-che.outputs.che-url }}"
-          chectl workspace:create --start --access-token ${{ steps.setup-che.outputs.che-token }} --devfile=$(pwd)/che/che/tests/e2e/files/happy-path/happy-path-workspace.yaml  2>&1 | tee workspace.log
+          chectl workspace:create --start --devfile=$(pwd)/che/che/tests/e2e/files/happy-path/happy-path-workspace.yaml  2>&1 | tee workspace.log
           WORKSPACE_URL=$(cat workspace.log | grep "https://")
           echo "found URL set to ${WORKSPACE_URL}"
           echo "::set-output name=workspace-url::${WORKSPACE_URL}"
           pods=$(kubectl get pods --all-namespaces -l che.workspace_id --field-selector status.phase=Running 2>&1)
           while [ "$pods" == 'No resources found.'  ];
             do
-              kubectl get pods -n che
+              kubectl get pods -n eclipse-che
               sleep 5
               pods=$(kubectl get pods --all-namespaces -l che.workspace_id --field-selector status.phase=Running 2>&1)
             done
