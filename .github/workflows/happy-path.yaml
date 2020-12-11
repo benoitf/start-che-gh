@@ -7,20 +7,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Record Display
-        id: record-display
-        run: |
-           echo "install ffmpeg"
-           sudo apt-get update
-           sudo apt-get install -y ffmpeg
-           mkdir -p /tmp/ffmpeg_report
-           export DISPLAY=':20'
-           Xvfb :20 -screen 0 1920x1080x24 > /dev/null 2>&1 &
-           sleep 3
-           nohup ffmpeg -y -video_size 1920x1080 -framerate 24 -f x11grab -i :20.0 /tmp/ffmpeg_report/output.mp4 2> /tmp/ffmpeg_report/ffmpeg_err.txt > /tmp/ffmpeg_report/ffmpeg_std.txt &
-           FFMPEG_PID=$!
-           echo "::set-output name=ffmpeg-pid::${FFMPEG_PID}"
-           trap kill_ffmpeg 2 15
       - name: Setup che
         id: setup-che
         uses: benoitf/che-install-gh-action@master
@@ -61,24 +47,13 @@ jobs:
                      -e TS_SELENIUM_LOAD_PAGE_TIMEOUT=240000 \
                      -e TS_SELENIUM_WORKSPACE_STATUS_POLLING=20000 \
                      -e TS_SELENIUM_BASE_URL=${CHE_URL} \
-                     -e TS_SELENIUM_LOG_LEVEL='DEBUG' \
+                     -e TS_SELENIUM_LOG_LEVEL='ERROR' \
                      -e TS_SELENIUM_MULTIUSER="true" \
                      -e TS_SELENIUM_USERNAME="admin" \
                      -e TS_SELENIUM_PASSWORD="admin" \
                      -v $(pwd)/che/tests/e2e:/tmp/e2e \
                      -e NODE_TLS_REJECT_UNAUTHORIZED=0 \
                      quay.io/eclipse/che-e2e:nightly
-      - name: End Record Display
-        id: end-record-display
-        if: ${{ always() }}
-        run: |
-           FFMPEG_PID=${{ steps.record-display.outputs.ffmpeg-pid}}
-           echo "Killing ffmpeg with PID=$FFMPEG_PID"
-           kill -2 "$FFMPEG_PID"
-           sleep 5
-           wait "$FFMPEG_PID" || echo "wait finished"
-           mkdir -p /tmp/e2e/report/
-           cp /tmp/ffmpeg_report/* /tmp/e2e/report/
       - name: upload artifacts
         if: ${{ always() }}
         id: upload-artifacts
