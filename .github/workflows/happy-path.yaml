@@ -59,8 +59,8 @@ jobs:
           echo "Eclipse Che URL: ${{ steps.setup-che.outputs.che-url }}"
           
           CHE_URL=${{ steps.setup-che.outputs.che-url }}
-          docker pull quay.io/eclipse/happy-path:nightly
-          
+          #docker pull quay.io/eclipse/happy-path:nightly
+          docker pull quay.io/fbenoit/che-e2e:no-ffmpeg
           docker run --shm-size=1g --net=host --ipc=host \
                      -p 5920:5920 \
                      -e TS_SELENIUM_HEADLESS='false' \
@@ -74,7 +74,7 @@ jobs:
                      -e TS_SELENIUM_PASSWORD="admin" \
                      -v $(pwd)/che/tests/e2e:/tmp/e2e \
                      -e NODE_TLS_REJECT_UNAUTHORIZED=0 \
-                     quay.io/eclipse/che-e2e:7.22.2
+                     quay.io/fbenoit/che-e2e:no-ffmpeg
       - name: upload artifacts
         if: ${{ always() }}
         id: upload-artifacts
