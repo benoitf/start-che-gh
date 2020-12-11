@@ -60,6 +60,7 @@ jobs:
           
           CHE_URL=${{ steps.setup-che.outputs.che-url }}
           docker pull quay.io/eclipse/happy-path:nightly
+          
           docker run --shm-size=1g --net=host --ipc=host \
                      -p 5920:5920 \
                      -e TS_SELENIUM_HEADLESS='false' \
