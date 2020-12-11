@@ -68,13 +68,13 @@ jobs:
                      -e TS_SELENIUM_LOAD_PAGE_TIMEOUT=240000 \
                      -e TS_SELENIUM_WORKSPACE_STATUS_POLLING=20000 \
                      -e TS_SELENIUM_BASE_URL=${CHE_URL} \
-                     -e TS_SELENIUM_LOG_LEVEL='ERROR' \
+                     -e TS_SELENIUM_LOG_LEVEL='DEBUG' \
                      -e TS_SELENIUM_MULTIUSER="true" \
                      -e TS_SELENIUM_USERNAME="admin" \
                      -e TS_SELENIUM_PASSWORD="admin" \
                      -v $(pwd)/che/tests/e2e:/tmp/e2e \
                      -e NODE_TLS_REJECT_UNAUTHORIZED=0 \
-                     quay.io/eclipse/che-e2e:nightly
+                     quay.io/eclipse/che-e2e:7.22.2
       - name: upload artifacts
         if: ${{ always() }}
         id: upload-artifacts
