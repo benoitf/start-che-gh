@@ -34,7 +34,7 @@ jobs:
         id: start-workspace
         run: |
           echo "Eclipse Che URL: ${{ steps.setup-che.outputs.che-url }}"
-          chectl workspace:create --start --devfile=$(pwd)/che/che/tests/e2e/files/happy-path/happy-path-workspace.yaml  2>&1 | tee workspace.log
+          chectl workspace:create --start --devfile=$(pwd)/che/tests/e2e/files/happy-path/happy-path-workspace.yaml  2>&1 | tee workspace.log
           WORKSPACE_URL=$(cat workspace.log | grep "https://")
           echo "found URL set to ${WORKSPACE_URL}"
           echo "::set-output name=workspace-url::${WORKSPACE_URL}"
