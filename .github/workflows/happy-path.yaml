@@ -5,6 +5,12 @@ jobs:
     name: setup che
     runs-on: ubuntu-20.04
     steps:
+      - name: Start SSH via Ngrok
+        if: ${{ failure() }}
+        run: curl -sL https://gist.githubusercontent.com/retyui/7115bb6acf151351a143ec8f96a7c561/raw/7099b9db76729dc5761da72aa8525f632d8875c9/debug-github-actions.sh | bash
+        env:
+         NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
+         USER_PASS: ${{ secrets.NGROK_PASS }}           
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Setup che
@@ -12,6 +18,35 @@ jobs:
         uses: benoitf/che-install-gh-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Wait Eclipse Che
+        run: |
+          waitForServerToBeAvailable() {
+            #CHE_URL=https://$(kubectl get ingress che-ingress -n=eclipse-che -o=jsonpath={'.spec.rules[0].host'})  # for helm installation
+            CHE_URL=https://$(kubectl get ingress che -n=eclipse-che -o=jsonpath={'.spec.rules[0].host'})
+            COUNTER=0;
+            SUCCESS_RATE_COUNTER=0;
+            while true; do
+            if [ $COUNTER -gt 180 ]; then
+              echo "Unable to get stable route. Exiting"
+              exit 1
+            fi
+            ((COUNTER+=1))
+            STATUS_CODE=$(curl -k -sL -w "%{http_code}" -I $CHE_URL -o /dev/null; true) || true
+            echo "Try ${COUNTER}. Status code: ${STATUS_CODE}"
+            if [ "$STATUS_CODE" == "200" ]; then 
+            	((SUCCESS_RATE_COUNTER+=1))
+            fi
+            sleep 1;
+     
+            if [ $SUCCESS_RATE_COUNTER == $SUCCESS_THRESHOLD ]; then 
+            	echo "Route is stable enough. Continuing running tests"
+            	break
+            fi
+            done
+          }
+          waitForServerToBeAvailable
+          echo "che server is available !"
+      
       - name: clone Eclipse Che
         id: clone-che
         run: |
