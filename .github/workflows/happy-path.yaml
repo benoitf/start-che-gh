@@ -24,7 +24,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
       - name: pull images
-        id: pull images
+        id: pull-images
         run: |
           eval $(minikube docker-env)
           docker pull quay.io/eclipse/happy-path:nightly
