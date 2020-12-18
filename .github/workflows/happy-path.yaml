@@ -74,7 +74,7 @@ jobs:
                      -e TS_SELENIUM_PASSWORD="admin" \
                      -v $(pwd)/che/tests/e2e:/tmp/e2e \
                      -e NODE_TLS_REJECT_UNAUTHORIZED=0 \
-                     quay.io/fbenoit/che-e2e:rhoppv1
+                     quay.io/fbenoit/che-e2e:preset
       - name: upload artifacts
         if: ${{ always() }}
         id: upload-artifacts
