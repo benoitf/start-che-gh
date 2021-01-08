@@ -18,15 +18,15 @@ jobs:
           registry: docker.io
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - name: Setup che
+        id: setup-che
+        uses: benoitf/che-install-gh-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run Happy Path tests
         if: ${{ always() }}
         id: happy-path-tests
         uses: benoitf/happy-path-tests-action@main
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Setup che
-        id: setup-che
-        uses: benoitf/che-install-gh-action@master
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: pull images
