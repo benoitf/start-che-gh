@@ -26,7 +26,7 @@ jobs:
       - name: Run Happy Path tests
         if: ${{ always() }}
         id: happy-path-tests
-        uses: benoitf/happy-path-tests-action@master
+        uses: benoitf/happy-path-tests-action@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: pull images
