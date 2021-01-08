@@ -29,58 +29,6 @@ jobs:
         uses: benoitf/happy-path-tests-action@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: pull images
-        id: pull-images
-        run: |
-          eval $(minikube docker-env)
-          docker pull quay.io/eclipse/happy-path:nightly
-          docker pull mariolet/petclinic:d2831f9b
-          docker pull centos/postgresql-96-centos7:9.6
-          docker pull centos/mysql-57-centos7
-          docker pull quay.io/eclipse/che-theia:next
-          docker pull quay.io/eclipse/che-theia-endpoint-runtime-binary:next
-      - name: clone Eclipse Che
-        id: clone-che
-        run: |
-           git clone https://github.com/benoitf/che -b gh-action-hp
-      - name: Start Workspace
-        id: start-workspace
-        run: |
-          echo "Eclipse Che URL: ${{ steps.setup-che.outputs.che-url }}"
-          chectl workspace:create --start --devfile=$(pwd)/che/tests/e2e/files/happy-path/happy-path-workspace.yaml  2>&1 | tee workspace.log
-          WORKSPACE_URL=$(cat workspace.log | grep "https://")
-          echo "found URL set to ${WORKSPACE_URL}"
-          echo "::set-output name=workspace-url::${WORKSPACE_URL}"
-          pods=$(kubectl get pods --all-namespaces -l che.workspace_id --field-selector status.phase=Running 2>&1)
-          while [ "$pods" == 'No resources found.'  ];
-            do
-              kubectl get pods -n eclipse-che
-              sleep 5
-              pods=$(kubectl get pods --all-namespaces -l che.workspace_id --field-selector status.phase=Running 2>&1)
-            done
-          echo "End of wait for a running workspace"           
-      - name: Start Happy path tests
-        id: start-happy-path-tests
-        run: |
-          echo "Eclipse Che URL: ${{ steps.setup-che.outputs.che-url }}"
-          
-          CHE_URL=${{ steps.setup-che.outputs.che-url }}
-          docker pull quay.io/eclipse/happy-path:nightly
-          docker run --shm-size=1g --net=host --ipc=host \
-                     -p 5920:5920 \
-                     -e VIDEO_RECORDING='false' \
-                     -e TS_SELENIUM_HEADLESS='false' \
-                     -e TS_SELENIUM_DEFAULT_TIMEOUT=300000 \
-                     -e TS_SELENIUM_LOAD_PAGE_TIMEOUT=240000 \
-                     -e TS_SELENIUM_WORKSPACE_STATUS_POLLING=20000 \
-                     -e TS_SELENIUM_BASE_URL=${CHE_URL} \
-                     -e TS_SELENIUM_LOG_LEVEL='DEBUG' \
-                     -e TS_SELENIUM_MULTIUSER="true" \
-                     -e TS_SELENIUM_USERNAME="admin" \
-                     -e TS_SELENIUM_PASSWORD="admin" \
-                     -v $(pwd)/che/tests/e2e:/tmp/e2e \
-                     -e NODE_TLS_REJECT_UNAUTHORIZED=0 \
-                     quay.io/eclipse/happy-path:nightly
       - name: upload artifacts
         if: ${{ always() }}
         id: upload-artifacts
