@@ -24,10 +24,10 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Run Happy Path tests
-        if: ${{ always() }}
         id: happy-path-tests
         uses: benoitf/happy-path-tests-action@main
         with:
+          che-url: ${{ steps.setup-che.outputs.che-url }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: upload artifacts
         if: ${{ always() }}
