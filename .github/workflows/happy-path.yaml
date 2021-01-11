@@ -101,6 +101,14 @@ jobs:
           curl http://custom-devfile.$(minikube ip).nip.io/devfile.yaml
           echo "che-theia-meta.yaml content from http://custom-devfile.$(minikube ip).nip.io/che-theia-meta.yaml is:"
           curl http://custom-devfile.$(minikube ip).nip.io/che-theia-meta.yaml
+          
+          docker pull quay.io/eclipse/che-theia:next
+          docker pull quay.io/eclipse/che-theia-endpoint-runtime-binary:next
+          docker tag quay.io/eclipse/che-theia:next local-che-theia:latest
+          docker tag quay.io/eclipse/che-theia-endpoint-runtime-binary:next local-che-theia-endpoint-runtime-binary:latest
+          docker save -o foo.tar local-che-theia:latest local-che-theia-endpoint-runtime-binary:latest
+          eval $(minikube docker-env)
+          docker load --input=foo.tar
       - name: Run Happy Path tests
         id: happy-path-tests
         uses: benoitf/happy-path-tests-action@main
