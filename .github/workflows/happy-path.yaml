@@ -91,7 +91,7 @@ jobs:
 
           # patch happy-path-workspace.yaml
           wget https://raw.githubusercontent.com/eclipse/che/master/tests/e2e/files/happy-path/happy-path-workspace.yaml -O devfile.yaml
-          sed -i "s|id: eclipse/che-theia/next|alias: che-theia\n    reference: ${DEVFILE_CUSTOM_URL}/che-theia-meta.yaml|" devfile.yaml
+          sed -i "s|id: eclipse/che-theia/next|alias: che-theia\n    reference: http://custom-devfile.$(minikube ip).nip.io/che-theia-meta.yaml|" devfile.yaml
 
           kubectl cp che-theia-meta.yaml $DEPLOY_POD_NAME:/usr/local/apache2/htdocs/
           kubectl cp devfile.yaml $DEPLOY_POD_NAME:/usr/local/apache2/htdocs/
