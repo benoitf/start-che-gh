@@ -96,5 +96,5 @@ jobs:
           name: video
           path: che/tests/e2e/report
       - name: Wait 1hour before shutting down instance
-        if: ${{ always() }}
+        if: ${{ failure() }}
         run: sleep 1h
