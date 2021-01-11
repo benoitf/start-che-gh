@@ -97,7 +97,9 @@ jobs:
           kubectl cp devfile.yaml $DEPLOY_POD_NAME:/usr/local/apache2/htdocs/
 
           echo "::set-output name=devfile-url::http://custom-devfile.$(minikube ip).nip.io/devfile.yaml"
+          echo "devfile yaml content from http://custom-devfile.$(minikube ip).nip.io/devfile.yaml is:"
           curl http://custom-devfile.$(minikube ip).nip.io/devfile.yaml
+          echo "che-theia-meta.yaml content from http://custom-devfile.$(minikube ip).nip.io/che-theia-meta.yaml is:"
           curl http://custom-devfile.$(minikube ip).nip.io/che-theia-meta.yaml
       - name: Run Happy Path tests
         id: happy-path-tests
@@ -105,7 +107,7 @@ jobs:
         with:
           che-url: ${{ steps.setup-che.outputs.che-url }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          devfile-path: ${{ steps.custom-che-theia.outputs.devfile-url }}
+          devfile-url: ${{ steps.custom-che-theia.outputs.devfile-url }}
       - name: upload artifacts
         if: ${{ always() }}
         id: upload-artifacts
