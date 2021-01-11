@@ -30,9 +30,9 @@ jobs:
           apiVersion: apps/v1
           kind: Deployment
           metadata:
-          name: custom-devfile-deployment
-          labels:
-            app: customdevfile
+            name: custom-devfile-deployment
+            labels:
+              app: customdevfile
           spec:
             selector:
               matchLabels:
@@ -47,7 +47,8 @@ jobs:
                   image: docker.io/httpd:2.4.46-alpine
                   ports:
                   - containerPort: 80
-          ---
+          EOF
+          cat <<EOF | kubectl apply -f -
           apiVersion: v1
           kind: Service
           metadata:
@@ -57,9 +58,10 @@ jobs:
             selector:
               app: customdevfile
             ports:
-            - port: 80
-              targetPort: 80
-          ---
+              - port: 80
+                targetPort: 80
+          EOF
+          cat <<EOF | kubectl apply -f -
           apiVersion: extensions/v1beta1
           kind: Ingress
           metadata:
