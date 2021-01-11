@@ -90,7 +90,7 @@ jobs:
           sed -i 's|quay.io/eclipse/che-theia-endpoint-runtime-binary:next|local-che-theia-endpoint-runtime-binary:latest|' che-theia-meta.yaml
 
           # patch happy-path-workspace.yaml
-          wget https://github.com/eclipse/che/blob/master/tests/e2e/files/happy-path/happy-path-workspace.yaml -O devfile.yaml
+          wget https://raw.githubusercontent.com/eclipse/che/master/tests/e2e/files/happy-path/happy-path-workspace.yaml -O devfile.yaml
           sed -i "s|id: eclipse/che-theia/next|alias: che-theia\n    reference: ${DEVFILE_CUSTOM_URL}/che-theia-meta.yaml|" devfile.yaml
 
           kubectl cp che-theia-meta.yaml $DEPLOY_POD_NAME:/usr/local/apache2/htdocs/
