@@ -18,4 +18,4 @@ jobs:
     steps:
       - name: Start minikube
         id: run-minikube
-        uses: benoitf/setup-minikube-action@add-logs
+        uses: che-incubator/setup-minikube-action@next
