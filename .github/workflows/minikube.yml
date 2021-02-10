@@ -20,7 +20,7 @@ jobs:
         dist: [ 'alpine', 'ubi8' ]
         chectlchannel: [ 'next', 'stable' ]
     env:
-      JOB_NAME: ${{matrix.dist}} ${{matrix.chectlchannel}}
+      JOB_NAME_SUFFIX: ${{matrix.dist}} ${{matrix.chectlchannel}}
     runs-on: ubuntu-20.04
     steps:
       - name: Start minikube
