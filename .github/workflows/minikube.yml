@@ -14,8 +14,13 @@ on: [push, pull_request]
 
 jobs:
   minikube:
+    strategy:
+      fail-fast: false
+      matrix:
+        dist: [ 'alpine', 'ubi8' ]
+        chectlchannel: [ 'next', 'stable' ]
     runs-on: ubuntu-20.04
     steps:
       - name: Start minikube
         id: run-minikube
-        uses: che-incubator/setup-minikube-action@next
+        uses: benoitf/setup-minikube-action@artifactname
