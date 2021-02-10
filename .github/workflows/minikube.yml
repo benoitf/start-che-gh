@@ -23,4 +23,4 @@ jobs:
     steps:
       - name: Start minikube
         id: run-minikube
-        uses: benoitf/setup-minikube-action@artifactname
+        uses: che-incubator/setup-minikube-action@next
