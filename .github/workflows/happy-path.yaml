@@ -18,13 +18,14 @@ jobs:
           registry: docker.io
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      - name: Setup che
-        id: setup-che
-        uses: benoitf/che-install-gh-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Custom che-Theia
-        id: custom-che-theia
+      - name: Start minikube
+        id: run-minikube
+        uses: che-incubator/setup-minikube-action@next
+      - name: Deploy Eclipse Che
+        id: deploy-che
+        uses: che-incubator/che-deploy-action@next
+      - name: devfile-che-theia
+        id: devfile-che-theia
         run: |
           cat <<EOF | kubectl apply -f -
           apiVersion: apps/v1
@@ -88,41 +89,36 @@ jobs:
           wget $CHE_THEIA_META_YAML_URL -O che-theia-meta.yaml
           sed -i 's|quay.io/eclipse/che-theia:next|local-che-theia:latest|' che-theia-meta.yaml
           sed -i 's|quay.io/eclipse/che-theia-endpoint-runtime-binary:next|local-che-theia-endpoint-runtime-binary:latest|' che-theia-meta.yaml
-
           # patch happy-path-workspace.yaml
           wget https://raw.githubusercontent.com/eclipse/che/master/tests/e2e/files/happy-path/happy-path-workspace.yaml -O devfile.yaml
           sed -i "s|id: eclipse/che-theia/next|alias: che-theia\n    reference: http://custom-devfile.$(minikube ip).nip.io/che-theia-meta.yaml|" devfile.yaml
-
           kubectl cp che-theia-meta.yaml $DEPLOY_POD_NAME:/usr/local/apache2/htdocs/
           kubectl cp devfile.yaml $DEPLOY_POD_NAME:/usr/local/apache2/htdocs/
-
           echo "::set-output name=devfile-url::http://custom-devfile.$(minikube ip).nip.io/devfile.yaml"
           echo "devfile yaml content from http://custom-devfile.$(minikube ip).nip.io/devfile.yaml is:"
           curl http://custom-devfile.$(minikube ip).nip.io/devfile.yaml
           echo "che-theia-meta.yaml content from http://custom-devfile.$(minikube ip).nip.io/che-theia-meta.yaml is:"
           curl http://custom-devfile.$(minikube ip).nip.io/che-theia-meta.yaml
-          
           docker pull quay.io/eclipse/che-theia:next
           docker pull quay.io/eclipse/che-theia-endpoint-runtime-binary:next
           docker tag quay.io/eclipse/che-theia:next local-che-theia:latest
-          docker tag quay.io/eclipse/che-theia-endpoint-runtime-binary:next local-che-theia-endpoint-runtime-binary:latest
-          docker save -o foo.tar local-che-theia:latest local-che-theia-endpoint-runtime-binary:latest
+          docker tag eclipse/che-theia-endpoint-runtime-binary:next local-che-theia-endpoint-runtime-binary:latest
+          docker save -o che-theia-images.tar local-che-theia:latest local-che-theia-endpoint-runtime-binary:latest
           eval $(minikube docker-env)
-          docker load --input=foo.tar
+          docker load --input=che-theia-images.tar
       - name: Run Happy Path tests
-        id: happy-path-tests
-        uses: benoitf/happy-path-tests-action@main
+        id: run-happy-path-tests
+        uses: che-incubator/happy-path-tests-action@next
         with:
-          che-url: ${{ steps.setup-che.outputs.che-url }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          devfile-url: ${{ steps.custom-che-theia.outputs.devfile-url }}
+          che-url: ${{ steps.deploy-che.outputs.che-url }}
+          devfile-url: ${{ steps.devfile-che-theia.outputs.devfile-url }}
       - name: upload artifacts
         if: ${{ always() }}
         id: upload-artifacts
         uses: actions/upload-artifact@v2
         with:
           name: video
-          path: che/tests/e2e/report
+          path: che/tests/e2e
       - name: Wait 1hour before shutting down instance
         if: ${{ failure() }}
         run: sleep 1h
