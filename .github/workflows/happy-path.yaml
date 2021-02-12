@@ -101,8 +101,10 @@ jobs:
           curl http://custom-devfile.$(minikube ip).nip.io/che-theia-meta.yaml
           docker pull quay.io/eclipse/che-theia:next
           docker pull quay.io/eclipse/che-theia-endpoint-runtime-binary:next
+          
           docker tag quay.io/eclipse/che-theia:next local-che-theia:latest
-          docker tag eclipse/che-theia-endpoint-runtime-binary:next local-che-theia-endpoint-runtime-binary:latest
+          docker tag quay.io/eclipse/che-theia-endpoint-runtime-binary:next local-che-theia-endpoint-runtime-binary:latest
+          
           docker save -o che-theia-images.tar local-che-theia:latest local-che-theia-endpoint-runtime-binary:latest
           eval $(minikube docker-env)
           docker load --input=che-theia-images.tar
