@@ -120,7 +120,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: video
-          path: che/tests/e2e
-      - name: Wait 1hour before shutting down instance
-        if: ${{ failure() }}
-        run: sleep 1h
+          path: che/tests/e2e/report/
+#      - name: Wait 1hour before shutting down instance
+#        if: ${{ failure() }}
+#        run: sleep 1h
