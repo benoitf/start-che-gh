@@ -5,21 +5,21 @@ jobs:
     name: setup che
     runs-on: macos-10.15
     steps:
-      - name: Start SSH via Ngrok
-        run: curl -sL https://gist.githubusercontent.com/retyui/7115bb6acf151351a143ec8f96a7c561/raw/7099b9db76729dc5761da72aa8525f632d8875c9/debug-github-actions.sh | bash
-        env:
-         NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
-         USER_PASS: ${{ secrets.NGROK_PASS }}           
+  #    - name: Start SSH via Ngrok
+  #      run: curl -sL https://gist.githubusercontent.com/retyui/7115bb6acf151351a143ec8f96a7c561/raw/7099b9db76729dc5761da72aa8525f632d8875c9/debug-github-actions.sh | bash
+  #      env:
+  #       NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
+  #       USER_PASS: ${{ secrets.NGROK_PASS }}           
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: install docker
-        run: brew install --cask docker
-      - name: 'Docker docker.io Login'
-        uses: docker/login-action@v1
-        with:
-          registry: docker.io
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+#      - name: install docker
+#        run: brew install --cask docker
+#      - name: 'Docker docker.io Login'
+#        uses: docker/login-action@v1
+#        with:
+#          registry: docker.io
+#          username: ${{ secrets.DOCKERHUB_USERNAME }}
+#          password: ${{ secrets.DOCKERHUB_PASSWORD }}
       - name: Start minikube
         id: run-minikube
         uses: benoitf/setup-minikube-action@use-mac
