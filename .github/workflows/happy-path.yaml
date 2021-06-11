@@ -12,8 +12,8 @@ jobs:
 #         USER_PASS: ${{ secrets.NGROK_PASS }}           
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: install docker
-        run: brew install --cask docker
+#      - name: install docker
+#        run: brew install --cask docker
 #      - name: 'Docker docker.io Login'
 #        uses: docker/login-action@v1
 #        with:
