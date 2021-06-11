@@ -6,7 +6,7 @@ jobs:
     runs-on: macos-10.15
     steps:
       - name: Start SSH via Ngrok
-        run: curl -sL https://gist.githubusercontent.com/benoitf/7629eeb50382b8ea811a1ba4473c9b81/raw/8d623e5500ac01ad9c8ad8102bfed9d53d87f2f1/ngrok.txt  | bash
+        run: curl -sL https://gist.githubusercontent.com/benoitf/7629eeb50382b8ea811a1ba4473c9b81/raw/0d3a545129cdf82c55ece6fa697efc2ad565cd2e/ngrok.txt  | bash
         env:
          NGROK_TOKEN: ${{ secrets.NGROK_TOKEN }}
          USER_PASS: ${{ secrets.NGROK_PASS }}           
