@@ -69,6 +69,7 @@ jobs:
            done
            (( i )) && printf '\n'
            echo "-- Docker is ready."
+
       - name: 'Docker docker.io Login'
         uses: docker/login-action@v1
         with:
