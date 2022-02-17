@@ -4,7 +4,7 @@ on: push
 jobs:
   install:
     name: setup che
-    runs-on: macos-10.15
+    runs-on: ubuntu-20.04
     steps:
 #      - name: Start SSH via Ngrok
 #        run: curl -sL https://gist.githubusercontent.com/benoitf/7629eeb50382b8ea811a1ba4473c9b81/raw/0d3a545129cdf82c55ece6fa697efc2ad565cd2e/ngrok.txt  | bash
@@ -13,10 +13,7 @@ jobs:
 #         USER_PASS: ${{ secrets.NGROK_PASS }}           
       - name: Checkout code
         uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-          
+         
       - name: Start minikube
         id: run-minikube
         uses: che-incubator/setup-minikube-action@next
